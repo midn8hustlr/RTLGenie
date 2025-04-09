@@ -62,7 +62,7 @@ def verify_rtl(spec, code, testbench_code, ref_rtl_path, llm_config_path="LLM_CO
             signals: Annotated[List[str], "List of signals to trace in the waveform"],
             start_time: Annotated[int, "Time (units) from which to trace signals"] = 0,
             end_time: Annotated[int, "Time (units) till which to trace signals"] = 100
-        ) -> Annotated[LiteralString, "Tabular waveform trace in text format"]:
+        ) -> Annotated[str, "Tabular waveform trace in text format"]:
         """
         Trace the functionally incorrect signal waveforms.
         """

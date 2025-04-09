@@ -334,7 +334,9 @@ class CustomCallback(StreamParserCallbacks):
 
         # Define column width for better alignment
         first_col_width = max(len(key) for key in self.signal_data.keys()) # Width for the first column (signal names)
-        time_col_width = len(str(self.offset + self.window)) + 2   # Width for each time value column
+        max_signal_width = max(len(item) for sublist in self.signal_data.values() for item in sublist)
+        max_time_width = max(len(str(time)) for time in self.time_values)
+        time_col_width = max(max_signal_width, max_time_width) + 2   # Width for each time value column
         
         # Create header row with time values
         header = f"{'time':<{first_col_width}}"
