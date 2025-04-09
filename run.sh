@@ -2,13 +2,21 @@
 
 # Check if problem ID is provided
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <problem_id>"
+    echo "Usage: $0 <problem_id> [start_stage]"
     echo "Example: $0 Prob156_review2015_fancytimer"
+    echo "Example with start stage: $0 Prob156_review2015_fancytimer plan2graph"
+    echo "Available start stages: spec2plan, plan2graph, graph2tasks, generate_rtl, verify_rtl"
     exit 1
 fi
 
 # Get the problem ID from command line
 PROBLEM_ID=$1
+
+# Get the optional start stage
+START_FROM=""
+if [ $# -ge 2 ]; then
+    START_FROM="--start-from $2"
+fi
 
 # Construct the file paths based on problem ID
 SPEC_FILE="./verilog-eval/dataset_spec-to-rtl/${PROBLEM_ID}_prompt.txt"
@@ -36,12 +44,16 @@ echo "Running for problem: $PROBLEM_ID"
 echo "Specification file: $SPEC_FILE"
 echo "Testbench file: $TESTBENCH_FILE"
 echo "Reference file: $REFERENCE_FILE"
+if [ -n "$START_FROM" ]; then
+    echo "Starting from stage: $2"
+fi
 echo
 
 python main.py --spec-id "$PROBLEM_ID" \
                   --spec-file "$SPEC_FILE" \
                   --testbench-file "$TESTBENCH_FILE" \
-                  --reference-file "$REFERENCE_FILE"
+                  --reference-file "$REFERENCE_FILE" \
+                  $START_FROM
 
 # Check if the execution was successful
 if [ $? -eq 0 ]; then
