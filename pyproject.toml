@@ -1,0 +1,14 @@
+[project]
+name = "rtlgenie"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "autogen[bedrock]>=0.8.5",
+    "langchain>=0.3.23",
+    "langchain-aws>=0.2.18",
+    "matplotlib>=3.10.1",
+    "networkx>=3.4.2",
+    "vcdvcd>=2.3.6",
+]
