@@ -46,8 +46,8 @@ def graph2tasks(spec: str, kg: VerilogKnowledgeGraph) -> list[str]:
                 if not target_node or target_node not in knowledge_graph.G.nodes:
                     continue
                     
-                node_type = knowledge_graph.G.nodes[target_node]['type']
-                node_desc = knowledge_graph.G.nodes[target_node]['description']
+                node_type = knowledge_graph.G.nodes[target_node].get('type', 'unknown')
+                node_desc = knowledge_graph.G.nodes[target_node].get('description', 'No description available')
                 formatted_info = f"{target_node}: {node_desc}"
                 
                 # Add information to appropriate category

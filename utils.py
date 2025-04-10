@@ -91,7 +91,7 @@ class VerilogKnowledgeGraph:
             self.G.add_node(i.get("name"), type="signal", description=i.get("description"))
         for i in self.data.get("fsm_states", []) or []:
             self.G.add_node(i.get("name"), type="fsm_state", description=i.get("description"))
-        for i in self.data.get("signal_examples", []):
+        for i in self.data.get("signal_examples", []) or []:
             self.G.add_node(i.get("name"), type="example", description=i.get("description"))
     
     def _connect_nodes(self):
@@ -206,8 +206,8 @@ class VerilogKnowledgeGraph:
         for node, attrs in self.G.nodes(data=True):
             node_data = {
                 "id": node,
-                "type": attrs["type"],
-                "description": attrs["description"]
+                "type": attrs.get("type", "unknown"),
+                "description": attrs.get("description", "")
             }
             data["nodes"].append(node_data)
         
@@ -232,10 +232,10 @@ class VerilogKnowledgeGraph:
         if query_type == "list_entities":
             # List all entities of a specific type
             for node, attrs in self.G.nodes(data=True):
-                if attrs["type"] == entity_type:
+                if attrs.get("type") == entity_type:
                     results.append({
                         "name": node,
-                        "description": attrs["description"]
+                        "description": attrs.get("description", "")
                     })
         
         elif query_type == "get_relationships":
