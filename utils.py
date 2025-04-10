@@ -87,9 +87,9 @@ class VerilogKnowledgeGraph:
         """Add all entities as nodes to the graph."""
         for i in self.data.get("plans", []):
             self.G.add_node(i.get("name"), type="plan", description=i.get("description"))
-        for i in self.data.get("signals", []):
+        for i in self.data.get("signals", []) or []:
             self.G.add_node(i.get("name"), type="signal", description=i.get("description"))
-        for i in self.data.get("fsm_states", []):
+        for i in self.data.get("fsm_states", []) or []:
             self.G.add_node(i.get("name"), type="fsm_state", description=i.get("description"))
         for i in self.data.get("signal_examples", []):
             self.G.add_node(i.get("name"), type="example", description=i.get("description"))
@@ -216,8 +216,7 @@ class VerilogKnowledgeGraph:
             edge_data = {
                 "source": src,
                 "target": dst,
-                "relationship": attrs["relationship"],
-                "explanation": attrs.get("explanation", "")
+                "relationship": attrs["relationship"]
             }
             data["edges"].append(edge_data)
         
