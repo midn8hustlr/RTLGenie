@@ -1,5 +1,5 @@
-from autogen import ConversableAgent, LLMConfig
-from utils import extract_json_from_markdown
+from autogen import LLMConfig
+from utils import extract_json_from_markdown, ChainlitAssistantAgent
 from prompts import *
 
 
@@ -18,7 +18,7 @@ def spec2plan(spec: str, llm_config_path: str = "LLM_CONFIG") -> list[dict]:
   llm_config.cache_seed = None
 
 
-  planner = ConversableAgent(
+  planner = ChainlitAssistantAgent(
     name="planner",
     description="Planner assistant to break down the task into subtasks for completing the verilog code.",
     system_message=PLANNER_SYSTEM_MESSAGE,
@@ -27,7 +27,7 @@ def spec2plan(spec: str, llm_config_path: str = "LLM_CONFIG") -> list[dict]:
     llm_config=llm_config,
   )
 
-  plan_reviewer = ConversableAgent(
+  plan_reviewer = ChainlitAssistantAgent(
     name="plan_reviewer",
     description="Assistant who verify the subtasks and plan from planner match the user instruction.",
     system_message=PLAN_REVIEWER_SYSTEM_MESSAGE,

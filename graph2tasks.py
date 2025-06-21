@@ -2,7 +2,7 @@ import json
 from langchain.chat_models import init_chat_model
 from prompts import *
 from utils import VerilogKnowledgeGraph
-
+import os
 
 def graph2tasks(spec: str, kg: VerilogKnowledgeGraph) -> list[str]:
     """Generate relationships between plans, signals, states, and examples."""
@@ -74,7 +74,7 @@ def graph2tasks(spec: str, kg: VerilogKnowledgeGraph) -> list[str]:
     json_output = plans_relations.model_dump_json(indent=2)
     
     # Process with LLM 
-    llm = init_chat_model("bedrock_converse:anthropic.claude-3-5-sonnet-20241022-v2:0")
+    llm = init_chat_model(os.environ.get('CHAT_MODEL'))
     final_plans = llm.with_structured_output(FinalPlans).invoke(
         PLAN_EXTRACT_PROMPT.format(spec=spec, json_struct=json_output)
     )

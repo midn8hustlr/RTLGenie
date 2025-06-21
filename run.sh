@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
     echo "Usage: $0 <problem_id> [start_stage]"
     echo "Example: $0 Prob156_review2015_fancytimer"
     echo "Example with start stage: $0 Prob156_review2015_fancytimer plan2graph"
-    echo "Available start stages: spec2plan, plan2graph, graph2tasks, generate_rtl, verify_rtl"
+    echo "Available start stages: spec2plan, plan2graph, graph2tasks, generate_rtl, 'generate_tb', verify_rtl"
     exit 1
 fi
 
@@ -19,9 +19,9 @@ if [ $# -ge 2 ]; then
 fi
 
 # Construct the file paths based on problem ID
-SPEC_FILE="./verilog-eval/dataset_spec-to-rtl/${PROBLEM_ID}_prompt.txt"
-TESTBENCH_FILE="./verilog-eval/dataset_spec-to-rtl/${PROBLEM_ID}_test.sv"
-REFERENCE_FILE="./verilog-eval/dataset_spec-to-rtl/${PROBLEM_ID}_ref.sv"
+SPEC_FILE="./verilog-eval-v2/${PROBLEM_ID}_prompt.txt"
+TESTBENCH_FILE="./verilog-eval-v2/${PROBLEM_ID}_test.sv"
+REFERENCE_FILE="./verilog-eval-v2/${PROBLEM_ID}_ref.sv"
 
 # Check if the files exist
 if [ ! -f "$SPEC_FILE" ]; then
@@ -53,7 +53,8 @@ python main.py --spec-id "$PROBLEM_ID" \
                   --spec-file "$SPEC_FILE" \
                   --testbench-file "$TESTBENCH_FILE" \
                   --reference-file "$REFERENCE_FILE" \
-                  $START_FROM
+                  $START_FROM \
+                  --use-dataset-tb
 
 # Check if the execution was successful
 if [ $? -eq 0 ]; then

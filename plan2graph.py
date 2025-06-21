@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 import json
 from utils import VerilogKnowledgeGraph
 from prompts import *
+import os
 
 
 def plan2graph(spec: str, plans: list[dict]) -> VerilogKnowledgeGraph:
@@ -18,7 +19,7 @@ def plan2graph(spec: str, plans: list[dict]) -> VerilogKnowledgeGraph:
         nx.DiGraph: The generated knowledge graph
     """
     # Initialize LLM
-    llm = init_chat_model("bedrock_converse:anthropic.claude-3-5-sonnet-20241022-v2:0")
+    llm = init_chat_model(os.environ.get('CHAT_MODEL'))
     
     # Define entity models
     class Entity(BaseModel):
@@ -69,5 +70,5 @@ def plan2graph(spec: str, plans: list[dict]) -> VerilogKnowledgeGraph:
     # Create and build the knowledge graph
     graph = VerilogKnowledgeGraph(full_json, relationships_json)
     graph.build_graph()
-    
+    # graph.visualize_graph()
     return graph

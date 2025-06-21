@@ -1,7 +1,7 @@
 from collections import deque
 import os
 from typing import Any
-from utils import VerilogToolKits
+from utils import VerilogToolKits, ChainlitAssistantAgent, ChainlitUserProxyAgent
 from prompts import RTL_DESIGNER_SYSTEM_MESSAGE, RTL_REVIEWER_SYSTEM_MESSAGE, RTL_DESIGNER_PROMPT
 
 from autogen import (
@@ -19,9 +19,10 @@ from autogen import (
 )
 
 from typing import Annotated
+import chainlit as cl
 
 
-def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG", work_dir: str = "./work") -> str:
+def generate_rtl(spec: str, tasks: list[str], work_dir: str = "./work", llm_config_path: str = "LLM_CONFIG") -> tuple[str, str]:
     """
     Generate RTL code for the given specification and tasks.
     
@@ -49,6 +50,15 @@ def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG
         Input the completed verilog module in string format. Output is the string of pass or failed.
         """
         [compile_pass, log] = vtk.verilog_syntax_check_tool(completed_verilog=completed_verilog)
+        cl.run_sync(
+            cl.Message(
+                content=f'***** Response from calling tool *****\n\n{log}',
+                author="tool call",
+            ).send()
+        )
+
+        if context_variables["interface"] in ("", None) and compile_pass:
+            context_variables["interface"] = completed_verilog
 
         context_variables["compile_pass"] = compile_pass
         context_variables["code"] = completed_verilog if compile_pass else None
@@ -60,13 +70,13 @@ def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG
             agent=next_agent
         )
 
-    user = UserProxyAgent(
+    user = ChainlitUserProxyAgent(
         name="user",
         human_input_mode="NEVER",
         code_execution_config=False
     )
 
-    rtl_designer = ConversableAgent(
+    rtl_designer = ChainlitAssistantAgent(
         name="rtl_designer",
         description="Assistant who writes RTL code in verilog.",
         system_message=RTL_DESIGNER_SYSTEM_MESSAGE,
@@ -74,7 +84,7 @@ def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG
         llm_config=llm_config,
     )
 
-    rtl_reviewer = ConversableAgent(
+    rtl_reviewer = ChainlitAssistantAgent(
         name="rtl_reviewer",
         description="Assistant who reviews RTL code in verilog.",
         system_message=RTL_REVIEWER_SYSTEM_MESSAGE,
@@ -86,6 +96,7 @@ def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG
         "rtl_generated": False,
         "compile_pass": False,
         "code": "",
+        "interface": "",
         "task_current": dict(),
         "tasks_completed": deque(),
         "tasks_remaining": deque(tasks),
@@ -157,4 +168,4 @@ def generate_rtl(spec: str, tasks: list[str], llm_config_path: str = "LLM_CONFIG
     )
     
     # Return the generated code from the workflow context
-    return workflow_context["code"]
+    return workflow_context["code"], workflow_context["interface"]

@@ -1,0 +1,34 @@
+
+I would like you to implement a module named TopModule with the following
+interface. All input and output ports are one bit unless otherwise
+specified.
+
+ - input  clk
+ - input  reset
+ - input  s
+ - input  w
+ - output z
+
+The module should implement a finite state machine (FSM) with inputs s and w.
+Assume that the FSM begins in a reset state called A, as depicted below.
+The FSM remains in state A as long as s = 0, and it moves to state B when
+s = 1. Once in state B the FSM examines the value of the input w in the
+next three clock cycles. You can use state B for monitoring the input w in 
+the first cycle, state B1 for monitoring the input w in the second cycle, 
+and so on. 
+If the combinations of input w are w = 1 -> 1 -> 0, w = 1 -> 0 -> 1, or 
+w = 0 -> 1 -> 1 in these three clock cycles (i.e., exactly two w=1), output z is 
+set to 1 for the following cycle. You can define pre_w is the previous_w value, 
+and pre_pre_w is the pre_w value, so using (pre_pre_w & pre_w & !w) matches 
+w = 1 -> 1 -> 0 in these three clock cycles to determine the next state.
+In state Z, the input w value is monitered and then FSM goes to state B1 after 
+a clock cycle in state Z.
+
+On the other hand, once w = 1 in less or mor than two of these three 
+clock cycles, the ouput z has to be 0 and FSM goes back to the state B to continue 
+monitoring the value of the input w for the next following three clock cycles. 
+
+Assume reset is active high synchronous. When the input reset is asserted, the FSM 
+goest to state A. Assume all sequential logic is triggered on the positive edge of 
+the clock.
+

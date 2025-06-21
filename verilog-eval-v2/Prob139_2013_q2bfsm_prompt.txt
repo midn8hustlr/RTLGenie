@@ -1,0 +1,40 @@
+
+I would like you to implement a module named TopModule with the following
+interface. All input and output ports are one bit unless otherwise
+specified.
+
+ - input  clk
+ - input  resetn
+ - input  x
+ - input  y
+ - output f
+ - output g
+
+Consider a finite state machine that is used to control some type of
+motor. The FSM has inputs x and y, which come from the motor, and
+produces outputs f and g, which control the motor. There is also a clock
+input called clk and a reset input (synchronous, active low) called
+resetn. The FSM has to work as follows. As long as the resetn input is
+active, the FSM stays in a beginning state, called state A. When the
+reset signal is de-asserted, then after the next clock edge the FSM advances 
+to another state to set the output f to 1 for one clock cycle and then FSM 
+advances again to monitor the x input. If FSM detects the first x=1 value, 
+then the FSM will go to next state to detect the following x=0 value, otherwise 
+the next state of FSM remains in the same state. 
+When detecting x=0 value, FSM goes to next state to detect the last x=1 which 
+need to be sent right after a clock cycle, otherwise next state of FSM remains 
+in the same state. 
+When the last x=1 is detected, g should be set to 1 on the following clock cycle, 
+otherwise the FSM goes back to the state to detect the first x=1 value. 
+When g is set to 1 after received the last x=1, the FSM starts to monitor the y input 
+within the following two clock cyles as described below.
+- In the first clock cycle when setting g to 1, if the y becomes value 1, then the FSM enters 
+  to another the state that should maintain g = 1 forever until input resetn is active, 
+  otherwise, FSM start to check the y in the second clock cycle.
+- In the second clock cycle, if the y becomes value 1, then the FSM enters to the state 
+  that should maintain g = 1 forever until input resetn is active, otherwise, FSM enters 
+  to another new state that set g = 0 forever until input resetn is active.
+In the above two clock cycles monitering y, the output g should remains 1. 
+
+Assume all sequential logic is triggered on the positive edge of the clock.
+
